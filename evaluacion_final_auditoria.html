@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluación Final - Técnicas de Auditoría Interna</title>
+<style>
+body{font-family:'Segoe UI',Arial;background:linear-gradient(135deg,#0f172a,#1e3a8a,#2563eb);margin:0;padding:20px;color:#1f2937}
+.container{max-width:900px;margin:auto;background:#ffffff;padding:30px;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,0.25)}
+h1{text-align:center;color:#111827;margin-bottom:5px}
+.subtitle{text-align:center;color:#6b7280;margin-bottom:5px;font-size:15px}
+.tag{text-align:center;margin-bottom:20px}
+.tag span{background:#eff6ff;color:#2563eb;font-size:12px;padding:4px 12px;border-radius:50px;font-weight:600}
+.progress{height:8px;background:#e5e7eb;border-radius:10px;margin:20px 0}
+.bar{height:100%;background:#2563eb;border-radius:10px;transition:.4s}
+.card{padding:20px;border-radius:12px;background:#f8fafc;margin-bottom:15px;border-left:5px solid #2563eb}
+.tema{font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.case{font-size:14px;color:#374151;margin-bottom:10px}
+.q{font-size:18px;font-weight:600;margin-bottom:15px}
+.opt{display:block;background:#fff;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #d1d5db;cursor:pointer;transition:.2s}
+.opt:hover{background:#eff6ff;border-color:#2563eb}
+.correct{background:#dcfce7!important;border-color:#16a34a!important}
+.wrong{background:#fee2e2!important;border-color:#dc2626!important}
+.opt.disabled{pointer-events:none}
+#next{display:none;background:#2563eb;color:#fff;border:none;padding:12px 24px;border-radius:8px;cursor:pointer;font-size:15px;margin-top:10px}
+#next:hover{background:#1d4ed8}
+.result{text-align:center;padding:30px}
+.result h2{font-size:48px;color:#111827;margin-bottom:5px}
+.result p{font-size:20px;color:#6b7280;margin-bottom:15px}
+.badge{display:inline-block;padding:12px 30px;border-radius:50px;margin-top:10px;font-weight:bold;font-size:18px}
+.pass{background:#dcfce7;color:#16a34a}
+.fail{background:#fee2e2;color:#dc2626}
+.explain{margin-top:12px;font-size:14px;color:#4b5563;background:#f0f9ff;border-left:4px solid #2563eb;padding:10px;border-radius:6px}
+.counter{text-align:right;font-size:13px;color:#9ca3af;margin-bottom:10px}
+.result-detail{margin-top:20px;font-size:14px;color:#6b7280}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎓 Evaluación Final</h1>
+  <div class="subtitle">Técnicas de Auditoría Interna</div>
+  <div class="tag"><span>Nota mínima para aprobar: 60%</span></div>
+  <div class="progress"><div id="bar" class="bar" style="width:0%"></div></div>
+  <div class="counter" id="counter">Pregunta 1 de 6</div>
+  <div id="quiz"></div>
+  <button id="next" onclick="nextQ()">Siguiente →</button>
+</div>
+<script>
+const q=[
+  {
+    tema:"Planificación de Auditoría",
+    case:"CASO: Un auditor inicia una auditoría sin definir objetivos ni alcance previo.",
+    q:"¿Cuál es el error principal en este proceso?",
+    o:["No tener suficiente personal","No contar con un plan de auditoría","No informar a la gerencia","No usar tecnología"],
+    a:1,
+    exp:"La planificación es la base de toda auditoría. Sin objetivos y alcance definidos, el proceso carece de dirección y control."
+  },
+  {
+    tema:"Evidencia y Hallazgos",
+    case:"CASO: El auditor documenta un hallazgo basándose en comentarios verbales de un empleado, sin respaldo documental.",
+    q:"¿Qué tipo de evidencia está utilizando y cuál es el problema?",
+    o:["Evidencia física, es válida","Evidencia testimonial, insuficiente por sí sola","Evidencia documental, completa","Evidencia analítica, correcta"],
+    a:1,
+    exp:"La evidencia testimonial debe complementarse con documentos o pruebas físicas para ser suficiente y competente."
+  },
+  {
+    tema:"Redacción de Informes",
+    case:"CASO: El informe de auditoría tiene 80 páginas con detalles técnicos que dificultan su lectura.",
+    q:"¿Qué característica del informe se ve afectada?",
+    o:["Objetividad","Claridad y concisión","Confidencialidad","Independencia"],
+    a:1,
+    exp:"Un buen informe debe ser claro, conciso y comprensible para todos los usuarios, no solo para los auditores."
+  },
+  {
+    tema:"Planificación de Auditoría",
+    case:"CASO: Durante la auditoría se detectan riesgos nuevos no contemplados en el plan original.",
+    q:"¿Qué debe hacer el auditor?",
+    o:["Ignorarlos y seguir el plan","Finalizar la auditoría","Ajustar el plan para incluir los nuevos riesgos","Informar solo al final"],
+    a:2,
+    exp:"El plan de auditoría debe ser flexible y actualizarse cuando se identifican nuevos riesgos durante la ejecución."
+  },
+  {
+    tema:"Seguimiento y Mejora Continua",
+    case:"CASO: Las acciones correctivas fueron implementadas pero el auditor no verifica si eliminaron el riesgo.",
+    q:"¿Qué etapa del proceso de auditoría se está omitiendo?",
+    o:["Planificación","Ejecución","Seguimiento","Comunicación"],
+    a:2,
+    exp:"El seguimiento verifica que las acciones correctivas sean efectivas y que el riesgo haya sido mitigado realmente."
+  },
+  {
+    tema:"Evidencia y Hallazgos",
+    case:"CASO: El auditor encuentra una diferencia entre lo registrado y lo real, pero no la incluye en el informe.",
+    q:"¿Qué principio ético se incumple?",
+    o:["Confidencialidad","Objetividad e integridad","Competencia profesional","Planificación"],
+    a:1,
+    exp:"El auditor tiene la obligación de reportar todos los hallazgos relevantes con objetividad e integridad, sin omitir información."
+  }
+];
+
+let i=0, s=0;
+
+function load(){
+  let p=(i/q.length)*100;
+  document.getElementById('bar').style.width=p+'%';
+  document.getElementById('counter').textContent=`Pregunta ${i+1} de ${q.length}`;
+  let html=`<div class='card'>
+    <div class='tema'>📌 ${q[i].tema}</div>
+    <div class='case'>${q[i].case}</div>
+    <div class='q'>${i+1}. ${q[i].q}</div>`;
+  q[i].o.forEach((op,idx)=>{html+=`<div class='opt' id='opt${idx}' onclick='ans(${idx})'>${op}</div>`});
+  html+="</div>";
+  document.getElementById('quiz').innerHTML=html;
+  document.getElementById('next').style.display='none';
+}
+
+function ans(x){
+  document.querySelectorAll('.opt').forEach(o=>o.classList.add('disabled'));
+  if(x===q[i].a){document.getElementById('opt'+x).classList.add('correct');s++;}
+  else{
+    document.getElementById('opt'+x).classList.add('wrong');
+    document.getElementById('opt'+q[i].a).classList.add('correct');
+  }
+  document.getElementById('quiz').innerHTML+=`<div class='explain'>💡 ${q[i].exp}</div>`;
+  document.getElementById('next').style.display='block';
+}
+
+function nextQ(){
+  i++;
+  if(i<q.length) load(); else end();
+}
+
+function end(){
+  let pct=Math.round((s/q.length)*100);
+  let status=pct>=60?"✅ APROBADO":"❌ REPROBADO";
+  let cls=pct>=60?"pass":"fail";
+  document.getElementById('bar').style.width='100%';
+  document.getElementById('counter').textContent='Evaluación completada';
+  document.getElementById('quiz').innerHTML=`
+    <div class='result'>
+      <h2>${s}/${q.length}</h2>
+      <p>${pct}%</p>
+      <div class='badge ${cls}'>${status}</div>
+      <div class='result-detail'>
+        ${pct>=60
+          ? '¡Felicitaciones! Has demostrado dominio en las Técnicas de Auditoría Interna.'
+          : 'Te recomendamos repasar los contenidos del curso e intentarlo nuevamente.'}
+      </div>
+    </div>`;
+  document.getElementById('next').style.display='none';
+}
+
+load();
+</script>
+</body>
+</html>
