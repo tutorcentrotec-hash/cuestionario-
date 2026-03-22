@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluación Auditoría Interna</title>
+<style>
+body{font-family:'Segoe UI',Arial;background:linear-gradient(135deg,#3C3489,#7F77DD);margin:0;padding:20px;color:#333}
+.container{max-width:800px;margin:auto;background:#fff;padding:25px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
+h1{text-align:center;color:#3C3489;margin-bottom:20px}
+.card{margin-bottom:20px;padding:20px;border-radius:12px;background:#f9f9ff;border:1px solid #e0e0f0}
+.question{font-size:18px;font-weight:600;margin-bottom:15px}
+.option{display:block;background:#fff;margin:10px 0;padding:12px;border-radius:10px;border:1px solid #ddd;cursor:pointer;transition:all 0.2s}
+.option:hover{background:#EEEDFE;border-color:#7F77DD}
+.correct{background:#E1F5EE;border-color:#1D9E75;color:#085041}
+.wrong{background:#FCEBEB;border-color:#E24B4A;color:#501313}
+#next{display:none;margin-top:15px;padding:12px 20px;border:none;background:#3C3489;color:#fff;border-radius:10px;cursor:pointer;font-size:14px}
+#next:hover{background:#534AB7}
+.progress{height:8px;background:#eee;border-radius:10px;margin-bottom:20px}
+.progress-bar{height:100%;background:#7F77DD;border-radius:10px;transition:width 0.4s}
+.result{text-align:center;padding:20px}
+.result h2{color:#3C3489}
+.badge{display:inline-block;padding:10px 20px;border-radius:50px;font-weight:bold;margin-top:10px}
+.pass{background:#E1F5EE;color:#1D9E75}
+.fail{background:#FCEBEB;color:#E24B4A}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📊 Evaluación Parcial<br>Planificación de Auditoría Interna</h1>
+<div class="progress"><div id="bar" class="progress-bar"></div></div>
+<div id="quiz"></div>
+<button id="next" onclick="nextQuestion()">Siguiente →</button>
+</div>
+<script>
+const questions=[
+{q:"¿Cuál es el primer paso en la planificación de una auditoría interna?",options:["Ejecutar pruebas","Elaborar informe","Definir objetivos","Aplicar controles"],answer:2},
+{q:"La evaluación de riesgos en la planificación permite:",options:["Reducir costos","Identificar áreas críticas","Eliminar controles","Aumentar ventas"],answer:1},
+{q:"El programa de auditoría es:",options:["Un informe final","Un plan detallado de procedimientos","Un estado financiero","Un reglamento interno"],answer:1},
+{q:"¿Qué elemento define el alcance de la auditoría?",options:["Tiempo libre","Áreas a revisar","Salario del auditor","Opinión externa"],answer:1},
+{q:"La planificación adecuada ayuda a:",options:["Evitar trabajo","Aumentar errores","Optimizar recursos","Eliminar auditoría"],answer:2},
+{q:"¿Qué documento formaliza la planificación?",options:["Contrato","Programa de auditoría","Factura","Balance"],answer:1}
+];
+
+let current=0;
+let score=0;
+let answered=false;
+
+function loadQuestion(){
+const q=questions[current];
+let progress=(current/questions.length)*100;
+document.getElementById('bar').style.width=progress+'%';
+
+let html=`<div class="card"><div class="question">${current+1}. ${q.q}</div>`;
+q.options.forEach((opt,i)=>{
+html+=`<div class="option" onclick="selectOption(${i})">${opt}</div>`;
+});
+html+='</div>';
+document.getElementById("quiz").innerHTML=html;
+document.getElementById("next").style.display="none";
+answered=false;
+}
+
+function selectOption(i){
+if(answered) return;
+answered=true;
+const options=document.querySelectorAll(".option");
+options.forEach(o=>o.onclick=null);
+if(i===questions[current].answer){
+options[i].classList.add("correct");
+score++;
+}else{
+options[i].classList.add("wrong");
+options[questions[current].answer].classList.add("correct");
+}
+document.getElementById("next").style.display="block";
+}
+
+function nextQuestion(){
+current++;
+if(current<questions.length){
+loadQuestion();
+}else{
+showResult();
+}
+}
+
+function showResult(){
+let percent=Math.round((score/questions.length)*100);
+let status=percent>=60?"APROBADO":"REPROBADO";
+let className=percent>=60?"pass":"fail";
+
+document.getElementById("quiz").innerHTML=`
+<div class="result">
+<h2>Resultado: ${score}/${questions.length}</h2>
+<p>(${percent}%)</p>
+<div class="badge ${className}">${status}</div>
+</div>`;
+document.getElementById("next").style.display="none";
+document.getElementById('bar').style.width='100%';
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
